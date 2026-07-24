@@ -1,0 +1,159 @@
+/* clai.tools */
+
+:root {
+  color-scheme: dark;
+  --fg: #e6edf3;
+  --muted: #7d8590;
+  --bg-code: #161b22;
+  --border: #30363d;
+  --accent: #79c0ff;
+  --c-cmd: #79c0ff;
+  --c-prompt: #56d364;
+  --c-flag: #ffa657;
+  --c-file: #d2a8ff;
+  --c-str: #a5d6ff;
+  --sp: 1rem;
+}
+
+/* base */
+body {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0 var(--sp);
+  font: 1rem/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--muted);
+}
+
+h1, h2, h3, strong, summary, a { color: var(--fg); }
+h1 { font-size: 1.6rem; margin: 0 0 var(--sp); }
+h2 { margin: 0 0 calc(var(--sp) * 2); }
+h3 { margin: calc(var(--sp) * 2) 0 var(--sp); }
+h4 {
+  color: var(--muted);
+  font: normal 0.8rem/1.6 inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: calc(var(--sp) * 2) 0 calc(var(--sp) * 0.5);
+}
+
+pre {
+  position: relative;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--sp);
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+pre .copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+pre:hover .copy { opacity: 1; }
+pre .copy:hover { color: var(--fg); }
+
+img { margin: calc(var(--sp) * 2) 0; border-radius: 6px; }
+section { margin: calc(var(--sp) * 2) 0; }
+.badge b { color: var(--c-prompt); }
+
+/* layout */
+header { display: flex; justify-content: space-between; align-items: center; padding: var(--sp) 0; flex-wrap: wrap; gap: 0.5rem; }
+header nav { display: flex; flex-wrap: wrap; gap: 0.5rem var(--sp); }
+header nav a { margin: 0; }
+footer { padding: calc(var(--sp) * 2) 0; text-align: center; }
+
+/* tabs (install + visualizer) */
+.tabs input, .viz input { display: none; }
+.tabs nav, .viz nav { margin-bottom: var(--sp); display: flex; flex-wrap: wrap; gap: calc(var(--sp) * 0.5); }
+
+.tabs nav label,
+.viz nav label {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  cursor: pointer;
+}
+.tabs nav label:hover,
+.viz nav label:hover { color: var(--fg); }
+
+#i-brew:checked ~ nav label[for="i-brew"],
+#i-go:checked ~ nav label[for="i-go"],
+#v1:checked ~ nav label[for="v1"],
+#v2:checked ~ nav label[for="v2"],
+#v3:checked ~ nav label[for="v3"],
+#v4:checked ~ nav label[for="v4"],
+#v5:checked ~ nav label[for="v5"] { color: var(--fg); border-color: var(--accent); }
+
+.tabs pre { display: none; }
+#i-brew:checked ~ pre.i-brew,
+#i-go:checked ~ pre.i-go { display: block; }
+
+/* token colors */
+.t-cmd    { --c: var(--c-cmd); }
+.t-prompt { --c: var(--c-prompt); }
+.t-flag   { --c: var(--c-flag); }
+.t-file   { --c: var(--c-file); }
+.t-pipe   { --c: var(--muted); }
+.t-str    { --c: var(--c-str); }
+span[class^="t-"] { color: var(--c); }
+
+/* visualizer */
+.viz figure { display: none; margin: 0; }
+#v1:checked ~ figure:nth-of-type(1),
+#v2:checked ~ figure:nth-of-type(2),
+#v3:checked ~ figure:nth-of-type(3),
+#v4:checked ~ figure:nth-of-type(4),
+#v5:checked ~ figure:nth-of-type(5) { display: block; }
+
+.viz ul { list-style: none; padding: 0; margin: var(--sp) 0 0; }
+.viz pre span[class^="t-"] { cursor: pointer; }
+.viz li {
+  border-left: 2px solid var(--c, var(--muted));
+  padding-left: var(--sp);
+  margin: calc(var(--sp) * 0.5) 0 calc(var(--sp) * 0.5) var(--sp);
+  transition: opacity 0.15s;
+}
+.viz li b { color: var(--c, var(--muted)); }
+.viz ul.has-highlight li { opacity: 0.3; }
+.viz ul.has-highlight li.highlight { opacity: 1; color: var(--fg); }
+
+/* hljs */
+.hljs-built_in { color: var(--c-cmd); }
+.hljs-keyword  { color: var(--c-prompt); }
+.hljs-params   { color: var(--c-flag); }
+.hljs-string   { color: var(--c-str); }
+.hljs-comment  { color: var(--muted); }
+.hljs-operator { color: var(--muted); }
+.hljs-title    { color: var(--c-file); }
+.hljs-variable { color: var(--c-flag); }
+.hljs-literal  { color: var(--c-str); }
+.hljs-meta     { color: var(--c-prompt); }
+
+/* recipes */
+details { padding: calc(var(--sp) * 0.5) 0; }
+details pre { margin-top: calc(var(--sp) * 0.5); }
+summary { cursor: pointer; }
+
+/* mobile */
+@media (max-width: 640px) {
+  body { font-size: 0.9rem; }
+  h1 { font-size: 1.3rem; }
+  pre .copy { opacity: 1; }
+}
+

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://clai.tools/sitemap.xml

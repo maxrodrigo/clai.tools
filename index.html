@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>clai — AI for the Command Line</title>
+  <meta name="description" content="clai turns a language model into a regular shell command. It reads input (stdin), does what the prompt says, prints the result (stdout). Everything else (grep, jq, git, cat) works with it the way it always has.">
+  <meta property="og:title" content="clai — AI for the Command Line">
+  <meta property="og:description" content="clai turns a language model into a regular shell command. stdin in, prompt runs, stdout out. Works with grep, jq, git, and everything else.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://clai.tools/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="clai — AI for the Command Line">
+  <meta name="twitter:description" content="clai turns a language model into a regular shell command. stdin in, prompt runs, stdout out.">
+  <link rel="canonical" href="https://clai.tools/">
+  <meta name="theme-color" content="#0d1117">
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><text x="0" y="12" font-family="monospace" font-size="11" fill="%2356d364">>_</text></svg>'>
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "clai",
+    "url": "https://clai.tools/",
+    "description": "clai turns a language model into a regular shell command. It reads input (stdin), does what the prompt says, prints the result (stdout). Everything else (grep, jq, git, cat) works with it the way it always has.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS, Linux",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://github.com/maxrodrigo/clai/blob/main/LICENSE",
+    "sameAs": ["https://github.com/maxrodrigo/clai"]
+  }
+  </script>
+</head>
+<body>
+
+<header>
+  <strong>clai</strong>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#about">About</a>
+    <a href="#recipes">Recipes</a>
+    <a href="https://github.com/maxrodrigo/clai">GitHub</a>
+  </nav>
+</header>
+
+<main>
+
+<section id="hero">
+  <h1>clai — AI for the Command Line</h1>
+  <p>
+    clai turns a language model into a regular shell command.
+    It reads input (stdin), does what the prompt says, prints the result (stdout).
+    Everything else (grep, jq, git, cat) works with it the way it always has.
+  </p>
+  <p><code class="badge">stdin <b>→</b> LLM <b>→</b> stdout</code></p>
+
+  <div class="tabs">
+    <input type="radio" name="install" id="i-brew" checked>
+    <input type="radio" name="install" id="i-go">
+    <nav>
+      <label for="i-brew">Homebrew</label>
+      <label for="i-go">Go</label>
+    </nav>
+    <pre class="i-brew"><code class="language-bash">brew install maxrodrigo/tap/clai</code></pre>
+    <pre class="i-go"><code class="language-bash">go install github.com/maxrodrigo/clai/cmd/clai@latest</code></pre>
+  </div>
+
+  <p>Setup the model</p>
+  <pre><code class="language-bash">export OPENAI_API_KEY=sk-...    # or ANTHROPIC_API_KEY, GOOGLE_API_KEY
+ollama pull llama3.3            # or run fully local</code></pre>
+
+  <img src="https://media.githubusercontent.com/media/maxrodrigo/clai/main/.github/demo/dist/hero.gif" alt="clai demo: git diff piped to clai commit" width="100%">
+</section>
+
+<section id="how" class="viz">
+  <h2>How a clai pipeline works</h2>
+  <p>Every token has a job.</p>
+  <input type="radio" name="viz" id="v1" checked>
+  <input type="radio" name="viz" id="v2">
+  <input type="radio" name="viz" id="v3">
+  <input type="radio" name="viz" id="v4">
+  <input type="radio" name="viz" id="v5">
+  <nav>
+    <label for="v1">summarize</label>
+    <label for="v2">code review</label>
+    <label for="v3">blog draft</label>
+    <label for="v4">structured output</label>
+    <label for="v5">chained</label>
+  </nav>
+
+  <figure>
+    <pre>$ <span class="t-cmd">clai</span> <span class="t-prompt">summarize</span> <span class="t-file">article.txt</span></pre>
+    <ul>
+      <li class="t-cmd"><b>clai</b> — reads from stdin, calls the LLM, writes to stdout.</li>
+      <li class="t-prompt"><b>summarize</b> — built-in prompt: condenses the input into key points.</li>
+      <li class="t-file"><b>article.txt</b> — any text file passed as an argument. Piped stdin also works.</li>
+    </ul>
+  </figure>
+
+  <figure>
+    <pre>$ <span class="t-cmd">git diff</span> <span class="t-pipe">|</span> <span class="t-cmd">clai</span> <span class="t-prompt">code-review</span></pre>
+    <ul>
+      <li class="t-cmd"><b>git diff</b> — produces a unified diff of your working changes.</li>
+      <li class="t-pipe"><b>|</b> — connects stdout of git to stdin of clai. No temp files.</li>
+      <li class="t-cmd"><b>clai</b> — reads the diff from stdin and passes it to the LLM.</li>
+      <li class="t-prompt"><b>code-review</b> — built-in prompt: finds bugs, security issues, and performance problems.</li>
+    </ul>
+  </figure>
+
+  <figure>
+    <pre>$ <span class="t-cmd">clai</span> <span class="t-prompt">draft</span> <span class="t-file">research/*.md</span> <span class="t-flag">--strategy</span> <span class="t-str">self-refine</span></pre>
+    <ul>
+      <li class="t-cmd"><b>clai</b> — reads all input files, concatenates them, sends to LLM.</li>
+      <li class="t-prompt"><b>draft</b> — built-in prompt: writes a long-form blog post from notes, outlines, or sources.</li>
+      <li class="t-file"><b>research/*.md</b> — glob pattern: all markdown files in your research folder, read concurrently.</li>
+      <li class="t-flag"><b>--strategy</b> — applies a reasoning strategy before generating output.</li>
+      <li class="t-str"><b>self-refine</b> — the LLM critiques its own draft and rewrites it. More tokens, better output.</li>
+    </ul>
+  </figure>
+
+  <figure>
+    <pre>$ <span class="t-cmd">pdftotext invoice.pdf -</span> <span class="t-pipe">|</span> <span class="t-cmd">clai</span> <span class="t-prompt">parse</span> <span class="t-flag">-s</span> <span class="t-str">'{"vendor":"str","amount":"float"}'</span></pre>
+    <ul>
+      <li class="t-cmd"><b>pdftotext</b> — extracts text from a PDF. clai doesn't parse files, that's the shell's job.</li>
+      <li class="t-pipe"><b>|</b> — passes the extracted text directly to clai.</li>
+      <li class="t-cmd"><b>clai</b> — processes the text through the LLM.</li>
+      <li class="t-prompt"><b>parse</b> — built-in prompt: extracts structured data from unstructured text.</li>
+      <li class="t-flag"><b>-s</b> — validates output against a JSON schema. Exit code 3 on mismatch.</li>
+      <li class="t-str"><b>schema</b> — shorthand syntax. clai validates the output and retries if the shape is wrong.</li>
+    </ul>
+  </figure>
+
+  <figure>
+    <pre>$ <span class="t-cmd">clai</span> <span class="t-prompt">draft</span> <span class="t-file">sources/*.md</span> <span class="t-pipe">|</span> <span class="t-cmd">clai</span> <span class="t-prompt">proofread</span> <span class="t-file">&gt; post.md</span></pre>
+    <ul>
+      <li class="t-cmd"><b>clai (1)</b> — first LLM call: synthesizes multiple source files into a draft.</li>
+      <li class="t-prompt"><b>draft</b> — writes a long-form blog post from the input.</li>
+      <li class="t-file"><b>sources/*.md</b> — all markdown files in the sources folder.</li>
+      <li class="t-pipe"><b>|</b> — the draft output becomes input to the next LLM call.</li>
+      <li class="t-cmd"><b>clai (2)</b> — second LLM call: polishes the draft from the previous step.</li>
+      <li class="t-prompt"><b>proofread</b> — built-in prompt: fixes grammar, clarity, and flow without changing meaning.</li>
+      <li class="t-file"><b>&gt; post.md</b> — redirect final output to a file. Compose with any shell tool.</li>
+    </ul>
+  </figure>
+</section>
+
+<section id="about">
+  <h2>What is clai?</h2>
+  <p>
+    <strong>clai</strong> turns a language model into a regular shell command.
+    It reads input (stdin), does what the prompt says, prints the result (stdout).
+    Everything else (grep, jq, git, cat, pbpaste, xclip) works with it the way it always has.
+  </p>
+  <p>
+    Summarize a web page. Code-review a diff. Turn research notes into a blog post.
+    Extract structured JSON from a PDF. Or chain two LLM calls together, first one drafts, second one edits.
+    You stay in the terminal the whole time.
+  </p>
+  <p>
+    Works with <strong>OpenAI, Anthropic, Gemini, Bedrock, Vertex AI, Ollama</strong>, and anything OpenAI-compatible.
+    Switch providers with <code>-m</code>. Run locally with Ollama if nothing should leave your machine.
+  </p>
+  <ul>
+    <li><strong>Pipeline-native</strong> — stdin in, stdout out. Chains with grep, jq, awk, curl.</li>
+    <li><strong>Built-in prompts</strong> — summarize, draft, code-review, commit, translate, parse, proofread, and more.</li>
+    <li><strong>Multi-provider</strong> — <a href="https://github.com/maxrodrigo/clai#providers">OpenAI, Anthropic, Gemini, Bedrock, Vertex, Ollama</a>. One flag to switch.</li>
+    <li><strong>Reasoning strategies</strong> — Chain-of-Thought, Chain-of-Draft, Tree-of-Thought, Self-Refine.</li>
+    <li><strong>Structured output</strong> — JSON schema validation. Exit code 3 on mismatch, so scripts can trust the shape.</li>
+    <li><strong>Custom prompts</strong> — markdown files with frontmatter. Version them. Share them.</li>
+  </ul>
+
+  <h3 id="prompts">Prompts</h3>
+  <p>A prompt is a markdown file that tells the model what to do. Call it by name, or write one inline with <code>-e</code>.</p>
+  <pre><code class="language-bash">echo "find all Go files modified this week over 10KB" | clai shell-cmd
+find . -name '*.go' -mtime -7 -size +10k</code></pre>
+
+  <h3 id="strategies">Strategies</h3>
+  <p>A flag that changes how the model thinks before answering. <code>cot</code> for step-by-step, <code>cod</code> for minimal notes (cheaper), <code>tot</code> to explore multiple paths, <code>self-refine</code> to critique and rewrite. <a href="https://github.com/maxrodrigo/clai/blob/main/docs/ADVANCED.md#strategies">Learn more →</a></p>
+  <pre><code class="language-bash">clai explain --strategy cot problem.txt</code></pre>
+
+  <h3 id="custom-prompts">Custom prompts</h3>
+  <p>Your prompts live in plain files. Edit them. Version them. Frontmatter sets defaults; the body is the instruction. <a href="https://github.com/maxrodrigo/clai/blob/main/docs/ADVANCED.md#prompt-authoring">Full guide →</a></p>
+  <pre><code class="language-bash">cat ~/.config/clai/prompts/standup.md
+---
+description: Turn a git log into a standup update
+model: openai/gpt-4.1-mini
+---
+
+Write a three-bullet standup update from this git log.</code></pre>
+  <pre><code class="language-bash">git log --oneline --since=yesterday | clai standup</code></pre>
+
+  <h3 id="structured-output">Structured output</h3>
+  <p>Pass a schema with <code>-s</code> and clai validates the output. If it doesn't match, you get exit code 3. Scripts can rely on the shape. <a href="https://github.com/maxrodrigo/clai#structured-output">Schema syntax →</a></p>
+  <pre><code class="language-bash">clai parse -s '{"vendor": "str", "amount": "float"}' invoice.txt
+{"vendor": "Acme Hosting", "amount": 129.00}</code></pre>
+</section>
+
+<section id="recipes">
+  <h2>What can you do with clai?</h2>
+  <p>Real one-liners you can copy and run. Each one pairs clai with tools you already have. <a href="https://github.com/maxrodrigo/clai/blob/main/docs/EXAMPLES.md">More examples →</a></p>
+
+  <h3>Content</h3>
+
+  <details>
+    <summary>Summarize a YouTube video from the command line</summary>
+    <p>Grab the transcript with <code>yt-dlp</code>, pipe it to clai. Done.</p>
+    <h4>auto-generated subtitles via yt-dlp</h4>
+    <pre><code class="language-bash">yt-dlp --write-auto-subs --skip-download -o "/tmp/video" "URL"
+cat /tmp/video*.vtt | sed '/^[0-9]/d; /-->/d' | clai summarize</code></pre>
+    <h4>or use whisper for better transcription</h4>
+    <pre><code class="language-bash">yt-dlp -x --audio-format wav -o /tmp/audio.wav "URL"
+whisper /tmp/audio.wav --output_format txt
+clai summarize &lt; /tmp/audio.txt</code></pre>
+  </details>
+
+  <details>
+    <summary>Generate a blog post from multiple sources</summary>
+    <p>Point <code>draft</code> at a folder of notes. It reads them all and writes a post.</p>
+    <h4>blog post from a folder of notes</h4>
+    <pre><code class="language-bash">clai draft research/topic/*.md</code></pre>
+    <h4>steer the angle</h4>
+    <pre><code class="language-bash">clai draft research/*.md -e "Focus on the developer experience angle"</code></pre>
+    <h4>self-refine for better output</h4>
+    <pre><code class="language-bash">clai draft notes.md transcript.txt --strategy self-refine</code></pre>
+    <h4>fetch a source, combine with notes, draft and polish</h4>
+    <pre><code class="language-bash">curl -s "https://r.jina.ai/URL" > /tmp/ref.txt
+clai draft /tmp/ref.txt my-notes.md --strategy self-refine | clai proofread > post.md</code></pre>
+  </details>
+
+  <details>
+    <summary>Summarize a web page from the terminal</summary>
+    <p>Fetch the page as clean text, pipe it in.</p>
+    <h4>jina reader strips navigation and ads</h4>
+    <pre><code class="language-bash">curl -s "https://r.jina.ai/https://example.com/article" | clai summarize</code></pre>
+    <h4>or lynx for simple pages</h4>
+    <pre><code class="language-bash">lynx -dump "https://example.com/article" | clai summarize</code></pre>
+  </details>
+
+  <details>
+    <summary>Write a LinkedIn post or tweet from an article</summary>
+    <p>Two prompts, chained. First one reads, second one formats.</p>
+    <h4>straight from a url</h4>
+    <pre><code class="language-bash">curl -s "https://r.jina.ai/URL" | clai linkedin
+curl -s "https://r.jina.ai/URL" | clai tweet</code></pre>
+    <h4>or from a local file</h4>
+    <pre><code class="language-bash">clai summarize article.txt | clai tweet</code></pre>
+  </details>
+
+  <h3>Git &amp; Code</h3>
+
+  <details>
+    <summary>Code review a pull request</summary>
+    <p>Pipe the diff through clai before you read it yourself.</p>
+    <h4>review a github pr</h4>
+    <pre><code class="language-bash">gh pr diff 42 | clai code-review</code></pre>
+    <h4>filter to critical issues only</h4>
+    <pre><code class="language-bash">gh pr diff 42 | clai code-review | clai -e "Only critical bugs, numbered"</code></pre>
+    <h4>review working changes</h4>
+    <pre><code class="language-bash">git diff | clai code-review</code></pre>
+  </details>
+
+  <details>
+    <summary>Write git commit messages</summary>
+    <p>Pipe your staged diff. Get a conventional commit message back.</p>
+    <pre><code class="language-bash">git diff --cached | clai commit</code></pre>
+  </details>
+
+  <details>
+    <summary>Explain a confusing diff or error</summary>
+    <p>Pipe it in, ask what it means.</p>
+    <h4>explain a commit</h4>
+    <pre><code class="language-bash">git show abc1234 | clai -e "Explain what this change does and why"</code></pre>
+    <h4>explain the last error</h4>
+    <pre><code class="language-bash">!! 2&gt;&amp;1 | clai -e "Explain this error and suggest a fix"</code></pre>
+  </details>
+
+  <details>
+    <summary>Generate a changelog from git log</summary>
+    <p>Feed it the commits between two tags. Get a formatted changelog.</p>
+    <pre><code class="language-bash">git log --oneline v0.1.0..HEAD | clai changelog</code></pre>
+  </details>
+
+  <h3>Data &amp; Documents</h3>
+
+  <details>
+    <summary>Extract structured JSON from a PDF</summary>
+    <p>clai doesn't read PDFs. Extract the text first, then parse it.</p>
+    <h4>extract invoice fields</h4>
+    <pre><code class="language-bash">pdftotext invoice.pdf - | clai parse -s '{"vendor":"str","amount":"float","date":"date","items":"list"}'</code></pre>
+    <h4>pipe to jq</h4>
+    <pre><code class="language-bash">pdftotext invoice.pdf - | clai parse -s '{"title":"str","tags":"list"}' | jq '.tags[]'</code></pre>
+  </details>
+
+  <details>
+    <summary>Convert prose to CSV or JSON</summary>
+    <p>Free-form notes in, structured data out.</p>
+    <pre><code class="language-bash">clai to-csv report.txt > data.csv
+clai to-json notes.txt | jq .</code></pre>
+  </details>
+
+  <details>
+    <summary>Process files in bulk</summary>
+    <p>Let the shell fan out. clai handles each file.</p>
+    <h4>parallel code review</h4>
+    <pre><code class="language-bash">find . -name "*.go" | xargs -P4 -I{} sh -c 'clai code-review "{}" > "{}.review"'</code></pre>
+    <h4>add frontmatter to all docs</h4>
+    <pre><code class="language-bash">for f in docs/*.md; do
+  clai -e "Add YAML frontmatter with title and description" "$f" > "$f.new" &amp;&amp; mv "$f.new" "$f"
+done</code></pre>
+  </details>
+
+  <h3>Advanced</h3>
+
+  <details>
+    <summary>Use reasoning strategies for hard problems</summary>
+    <p>Pick a strategy based on the task. Some cost more tokens but think harder.</p>
+    <h4>step-by-step for debugging</h4>
+    <pre><code class="language-bash">cat failing-test.go | clai -e "Why does this test fail?" --strategy cot</code></pre>
+    <h4>explore multiple solutions</h4>
+    <pre><code class="language-bash">clai -e "How should I structure this API?" --strategy tot design.md</code></pre>
+    <h4>self-critique for polished writing</h4>
+    <pre><code class="language-bash">clai draft notes.txt --strategy self-refine</code></pre>
+    <h4>save tokens in batch jobs</h4>
+    <pre><code class="language-bash">for f in src/*.go; do
+  clai code-review --strategy cod "$f" >> reviews.txt
+done</code></pre>
+  </details>
+
+  <details>
+    <summary>Write in your own voice</summary>
+    <p>Make a voice file. Extend any prompt with it. <a href="https://github.com/maxrodrigo/clai/blob/main/docs/ADVANCED.md#prompt-composition">Full guide →</a></p>
+    <h4>create your voice file</h4>
+    <pre><code class="language-bash">mkdir -p ~/.config/clai/prompts/shared
+cat > ~/.config/clai/prompts/shared/voice.md &lt;&lt; 'EOF'
+I write in first person. Short sentences. No corporate speak.
+Words I never use: leverage, synergy, unlock.
+EOF</code></pre>
+    <h4>create a prompt that uses it</h4>
+    <pre><code class="language-bash">cat > ~/.config/clai/prompts/my-draft.md &lt;&lt; 'EOF'
+---
+extends: draft
+prepend:
+  - shared/voice.md
+---
+EOF</code></pre>
+    <h4>use it</h4>
+    <pre><code class="language-bash">clai my-draft research/*.md</code></pre>
+  </details>
+
+  <details>
+    <summary>Pick models per task</summary>
+    <p>Cheap local models for simple stuff. Frontier models when it matters.</p>
+    <h4>local model, nothing leaves your machine</h4>
+    <pre><code class="language-bash">clai summarize -m ollama/llama3.3 confidential.txt</code></pre>
+    <h4>frontier model for hard reasoning</h4>
+    <pre><code class="language-bash">clai -e "Evaluate this architecture" --strategy tot -m anthropic/claude-sonnet design.md</code></pre>
+    <h4>set defaults per prompt</h4>
+    <pre><code class="language-bash">export CLAI_MODEL_CODE_REVIEW="anthropic/claude-sonnet"
+export CLAI_MODEL_SUMMARIZE="openai/gpt-4.1-mini"
+export CLAI_MODEL_COMMIT="ollama/llama3.3"</code></pre>
+  </details>
+
+  <details>
+    <summary>Preview without spending tokens</summary>
+    <p><code>--dry-run</code> shows what would be sent. Free.</p>
+    <pre><code class="language-bash">clai draft research/*.md --strategy self-refine --dry-run</code></pre>
+  </details>
+</section>
+
+</main>
+
+<footer>
+  <a href="https://github.com/maxrodrigo/clai">GitHub</a> ·
+  <a href="https://github.com/maxrodrigo/clai/blob/main/LICENSE">MIT License</a> ·
+  clai.tools
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" crossorigin="anonymous"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
